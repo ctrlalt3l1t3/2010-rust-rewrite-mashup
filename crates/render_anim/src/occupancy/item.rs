@@ -672,7 +672,8 @@ fn append_dropper_draws(
                         .iter()
                         .map(|p| {
                             let scale = skate_host::object_dropper::RETAIL_MODEL_UNIT_METERS;
-                            [p[0] * scale, -p[2] * scale, p[1] * scale]
+                            crate::skate::collision::from_skate(Vec3::from_array(*p) * scale)
+                                .to_array()
                         })
                         .collect();
                     let normals: Vec<[f32; 3]> = mesh
@@ -837,10 +838,7 @@ mod dropper_tests {
         let transformed = draws[0]
             .world_from_local
             .transform_point3(Vec3::from_array(plan.vertices[1].position));
-        assert!(
-            transformed.distance(Vec3::Y * skate_host::object_dropper::RETAIL_MODEL_UNIT_METERS)
-                < 1e-5
-        );
+        assert!(transformed.distance(Vec3::Y) < 1e-5);
         let preview = draws[1]
             .world_from_local
             .transform_point3(Vec3::from_array(plan.vertices[3].position));
